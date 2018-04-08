@@ -1,0 +1,16 @@
+# **Development of SDR based test bed for GNSS Cybersecurity**
+Existence of GNSS interferences causes inaccurate information to complete denial of services in many GNSS applications. Monitoring the spectrum of these signals provides information on these interference sources and provides situation awareness. This project focuses on building a software detector that aims at an open and interoperable GNSS sensing network. Interoperability is attained by interfacing the dual frequency interference detector (presented by the open source Universal Software Radio Peripheral) and the database server which is based on the OGC SensorThings API standard.
+
+## **Getting Started**
+The USRP family of products are designed by Ettus Research for RF applications from DC to 6 GHz. For this project USRP X Series was used. The detector setup consists of:
+- front-end SDR (USRP X300)       - embedded PC (Ubuntu)
+- splitter                        - a bias tee
+- antenna
+The front-end was connected to the embedded PC using a 10 Gigabit PCI Express card that allows dual frequency interference
+monitoring of up to 100 MHz per channel. The antenna ports of the USRP device was connected to a splitter. The splitter facilitates reception of the dual frequencies. The input of the splitter was connected to a bias tee which provides DC power supply to the antenna. The USRP X300 provides a platform to design and deploy next generation wireless network. The hardware is equipped with two daughter board slots that enable dual frequency processing. The daughter board slots were installed with SBX-120 and the power consumption of the device is 45 Watts. The device is capable of providing a sampling rate of up to 200 MSps provided the host system is also capable of sustaining the device's sampling rate.
+
+## **Implementation**
+**1. Front-end configuration**
+The front-end is configured to the desired sampling rate, frequency, gain, antenna port and the number of samples per buffer for each channel. The front-end provides maximum sampling rate of 100 MS/s for each channel and the desired frequencies are set to L1 (1575.42 MHz) and L5 (1176.45 MHz). Once the front-end is configured, the device begins streaming samples in a continuous fashion. For each call to the receive method, the front-end streams the requested number of samples for each channel. The samples are stored in a two dimensional vector, i.e., each dimension indicates the samples streamed for each channel.
+**2. Detector Functionality**
+The power profile of the received signals is computed continuously. If the power spectrum exceeds the predefined threshold, then an interference event is detected. When interference is detected the power spectrum and spectrogram are continuously computed, logged and updated as the power of the received signal increases. During the presence of interference the PSD and STFT is recorded and updated for the maximum received interference power during the event. The interference event is considered to be over when the magnitude of the signal goes below the threshold. Once interference is detected, the event is sent to the database server. The samples sent to the database server are retrieved and plotted using Python.
